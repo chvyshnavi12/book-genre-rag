@@ -1,3 +1,5 @@
+import os
+os.environ["STREAMLIT_SERVER_FILE_WATCHER_TYPE"] = "none"
 import sys
 from pathlib import Path
 
@@ -129,15 +131,25 @@ else:
 
             st.markdown("### 🎯 Overall Preference Match")
 
-            # Progress bar
-            st.progress(match_score / 100)
+            progress = match_score / 100
+            st.progress(progress)
 
-            st.write(f"**Match Score:** {match_score}%")
-
-            st.caption(
-                "This score represents how well the book matches "
-                "your preferred genres based on genre prediction."
+            st.markdown(
+                f"<h3 style='color:#6c757d;'>{match_score}% Match</h3>",
+                unsafe_allow_html=True
             )
+
+            if match_score >= 70:
+                st.caption("Strong match with your preferences 👍")
+            elif match_score >= 40:
+                st.caption("Moderate match with your preferences 🙂")
+            else:
+                st.caption("Low match with your preferences 😕")
+            st.markdown("### 📊 Genre-wise Confidence")
+            for genre in st.session_state.preferences:
+                score = predictions.get(genre, 0)
+                st.write(f"{genre}: {score}%")
+                st.progress(score / 100)
 
         else:
             st.warning("Please enter a book name")

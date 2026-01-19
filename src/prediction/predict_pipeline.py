@@ -49,4 +49,13 @@ def predict_book(description: str, top_k: int = 3):
 
 def predict_genre_with_scores(book_text: str) -> dict:
     result = predict_book(book_text)
-    return result["predicted_genres"]
+    preds = result["predicted_genres"]
+
+    fixed = {}
+    for genre, score in preds.items():
+        # HARD SAFETY CHECK
+        if score <= 1:
+            score = score * 100
+        fixed[genre] = round(score, 2)
+
+    return fixed
